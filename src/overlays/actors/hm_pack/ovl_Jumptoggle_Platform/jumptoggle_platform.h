@@ -3,6 +3,7 @@
 
 #include "ultra64.h"
 #include "global.h"
+#include "z64actor.h"
 
 #define GET_JUMPTOGGLE_TYPE(this) (this->dyna.actor.params)
 

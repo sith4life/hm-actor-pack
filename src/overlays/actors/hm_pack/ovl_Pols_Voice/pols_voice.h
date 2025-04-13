@@ -3,8 +3,9 @@
 
 #include "ultra64.h"
 #include "global.h"
+#include "z64actor.h"
 
-#include "assets_hm_pack/objects/object_pols_voice/object_pols_voice.h"
+#include "assets/objects/hm_pack/object_pols_voice/object_pols_voice.h"
 
 struct PolsVoice;
 

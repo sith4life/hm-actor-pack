@@ -3,6 +3,8 @@
 
 #include "ultra64.h"
 #include "global.h"
+#include "gfx.h"
+#include "z64actor.h"
 
 struct ObjFan;
 

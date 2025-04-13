@@ -12,9 +12,28 @@
 
 #include "z_en_wiz.h"
 #include "overlays/actors/hm_pack/ovl_En_Wiz/z_en_wiz_fire.h"
-#include "assets_hm_pack/objects/object_wiz/object_wiz.h"
+#include "assets/objects/hm_pack/object_wiz/object_wiz.h"
 
-#define FLAGS (ACTOR_FLAG_0 | ACTOR_FLAG_2 | ACTOR_FLAG_4)
+#include "libc64/qrand.h"
+#include "attributes.h"
+#include "gfx.h"
+#include "gfx_setupdl.h"
+#include "ichain.h"
+#include "rand.h"
+#include "segmented_address.h"
+#include "sfx.h"
+#include "sys_math.h"
+#include "sys_matrix.h"
+#include "z_en_item00.h"
+#include "z_lib.h"
+#include "z64draw.h"
+#include "z64effect.h"
+#include "z64item.h"
+#include "z64play.h"
+#include "z64player.h"
+#include "z64save.h"
+
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
 typedef enum {
     /*  0 */ CASTTYPE_FIRE,
@@ -23,8 +42,8 @@ typedef enum {
     /*  3 */ CASTTYPE_ICE = 4
 } CastType;
 
-#define TARGET_ON (this->actor.flags |= ACTOR_FLAG_0)
-#define TARGET_OFF (this->actor.flags &= ~ACTOR_FLAG_0)
+#define TARGET_ON (this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED)
+#define TARGET_OFF (this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED)
 
 // uncomment this to only run DoNothing
 // #define TEST
@@ -59,7 +78,7 @@ void EnWiz_Teleport(EnWiz* this, PlayState* play);
 
 void EnWiz_DoNothing(EnWiz* this, PlayState* play);
 
-ActorInit En_Wiz_InitVars = {
+ActorProfile En_Wiz_Profile = {
     ACTOR_EN_WIZ,
     ACTORCAT_ENEMY,
     FLAGS,
@@ -73,7 +92,7 @@ ActorInit En_Wiz_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_HIT0,
+        COL_MATERIAL_HIT0,
         AT_NONE,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -81,11 +100,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0xFFCFFFFF, 0x00, 0x00 },
         { 0xFFCFFFFF, 0x00, 0x00 },
-        TOUCH_NONE,
-        BUMP_ON,
+        AT_NONE,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 55, 70, 0, { 0 } },
@@ -156,10 +175,10 @@ static EnemySpawnTable sEnemySpawnTable[] = {
 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_F32(uncullZoneForward, 2000, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneScale, 350, ICHAIN_CONTINUE),
-    ICHAIN_F32(uncullZoneDownward, 1000, ICHAIN_CONTINUE),
-    ICHAIN_U8(targetMode, 2, ICHAIN_STOP),
+    ICHAIN_F32(cullingVolumeDistance, 2000, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeScale, 350, ICHAIN_CONTINUE),
+    ICHAIN_F32(cullingVolumeDownward, 1000, ICHAIN_CONTINUE),
+    ICHAIN_U8(attentionPriority, 2, ICHAIN_STOP),
 };
 
 void EnWiz_InitCollision(Actor* thisx, PlayState* play) {
@@ -600,7 +619,7 @@ void EnWiz_SetupFrozen(Actor* thisx) {
     }
     Actor_PlaySfx(&this->actor, NA_SE_EN_GOMA_JR_FREEZE);
 
-    this->collider.base.colType = COLTYPE_HARD;
+    this->collider.elem.elemMaterial = COL_MATERIAL_HARD;
     this->collider.base.acFlags |= AC_HARD;
 
     this->actionFunc = EnWiz_Frozen;
@@ -617,7 +636,7 @@ void EnWiz_Frozen(EnWiz* this, PlayState* play) {
             this->actionFunc = EnWiz_DoNothing;
             this->timer = 40;
             #else
-            this->collider.base.colType = COLTYPE_HIT0;
+            this->collider.elem.elemMaterial = COL_MATERIAL_HIT0;
             this->collider.base.acFlags &= ~AC_HARD;
             EnWiz_SetupDisappear(this);
             #endif

@@ -5,9 +5,27 @@
  */
 
 #include "jumptoggle_platform.h"
-#include "assets_hm_pack/objects/object_jumptoggle_platform/object_jumptoggle_platform.h"
+#include "assets/objects/hm_pack/object_jumptoggle_platform/object_jumptoggle_platform.h"
 
-#define FLAGS (ACTOR_FLAG_4 | ACTOR_FLAG_5)
+#include "libc64/qrand.h"
+#include "attributes.h"
+#include "gfx.h"
+#include "gfx_setupdl.h"
+#include "ichain.h"
+#include "rand.h"
+#include "segmented_address.h"
+#include "sfx.h"
+#include "sys_matrix.h"
+#include "z_en_item00.h"
+#include "z_lib.h"
+#include "z64draw.h"
+#include "z64effect.h"
+#include "z64item.h"
+#include "z64play.h"
+#include "z64player.h"
+#include "z64save.h"
+
+#define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void JumptogglePlatform_Init(Actor* thisx, PlayState* play);
 void JumptogglePlatform_Destroy(Actor* thisx, PlayState* play);
@@ -19,7 +37,7 @@ void JumptogglePlatform_RotateToTarget(JumptogglePlatform* this, PlayState* play
 void JumptogglePlatform_CheckForJump(JumptogglePlatform* this, PlayState* play);
 void JumptogglePlatform_Border(JumptogglePlatform* this, PlayState* play);
 
-const ActorInit Jumptoggle_Platform_InitVars = {
+const ActorProfile Jumptoggle_Platform_Profile = {
     ACTOR_JUMPTOGGLE_PLATFORM,
     ACTORCAT_BG,
     FLAGS,

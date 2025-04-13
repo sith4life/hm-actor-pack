@@ -3,6 +3,7 @@
 
 #include "ultra64.h"
 #include "global.h"
+#include "z64actor.h"
 
 typedef enum {
     /* 0 */ EN_WIZ_FIRE_TYPE_MAGIC_PROJECTILE,

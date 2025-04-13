@@ -5,9 +5,27 @@
  */
 
 #include "rat.h"
-#include "assets_hm_pack/objects/object_rat/object_rat.h"
+#include "assets/objects/hm_pack/object_rat/object_rat.h"
 
-#define FLAGS (ACTOR_FLAG_0 | ACTOR_FLAG_2 | ACTOR_FLAG_4 | ACTOR_FLAG_5)
+#include "libc64/qrand.h"
+#include "attributes.h"
+#include "gfx.h"
+#include "gfx_setupdl.h"
+#include "ichain.h"
+#include "rand.h"
+#include "segmented_address.h"
+#include "sfx.h"
+#include "sys_matrix.h"
+#include "z_lib.h"
+#include "z64draw.h"
+#include "z64effect.h"
+#include "z64item.h"
+#include "z64play.h"
+#include "z64player.h"
+#include "z64save.h"
+#include "z_en_item00.h"
+
+#define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_HOSTILE | ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED)
 
 void Rat_Init(Actor* thisx, PlayState* play);
 void Rat_Destroy(Actor* thisx, PlayState* play);
@@ -65,7 +83,7 @@ static DamageTable sDamageTable = {
     /* Unknown 2     */ DMG_ENTRY(0, RAT_DMGEFF_NONE),
 };
 
-const ActorInit Rat_InitVars = {
+const ActorProfile Rat_Profile = {
     ACTOR_RAT,
     ACTORCAT_ENEMY,
     FLAGS,
@@ -79,7 +97,7 @@ const ActorInit Rat_InitVars = {
 
 static ColliderCylinderInit sCylinderInit = {
     {
-        COLTYPE_HIT5,
+        COL_MATERIAL_HIT5,
         AT_ON | AT_TYPE_ENEMY,
         AC_ON | AC_TYPE_PLAYER,
         OC1_ON | OC1_TYPE_ALL,
@@ -87,11 +105,11 @@ static ColliderCylinderInit sCylinderInit = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEM_MATERIAL_UNK0,
         { 0xFFCFFFFF, 0x08, 0x08 },
         { 0xFFCFFFFF, 0x00, 0x00 },
-        TOUCH_ON | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_ON | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 20, 30, 0, { 0, 0, 0 } },
@@ -196,7 +214,7 @@ void Rat_SetupStunned(Rat* this, PlayState* play) {
 
 void Rat_SetupDie(Rat* this, PlayState* play) {
     this->actor.speed = 0.0f;
-    this->actor.flags &= ~ACTOR_FLAG_0;
+    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
     this->actor.world.rot.y = this->actor.shape.rot.y = this->actor.yawTowardsPlayer;
     Animation_MorphToPlayOnce(&this->skelAnime, &gRatSkelDeathAnim, -3.0f);
     this->actionFunc = Rat_Die;
@@ -340,8 +358,8 @@ void Rat_Die(Rat* this, PlayState* play) {
 }
 
 void Rat_CheckDrowned(Rat* this, PlayState* play) {
-    if (!this->drowned && (this->actor.bgCheckFlags & BGCHECKFLAG_WATER) && (this->actor.yDistToWater > 5.0f)) {
-        Actor_SetDropFlag(&this->actor, &this->collider.info, true);
+    if (!this->drowned && (this->actor.bgCheckFlags & BGCHECKFLAG_WATER) && (this->actor.depthInWater > 5.0f)) {
+        Actor_SetDropFlag(&this->actor, &this->collider.elem, true);
         Actor_PlaySfx(&this->actor, NA_SE_EN_EIER_ATTACK);
         Enemy_StartFinishingBlow(play, &this->actor);
         this->drowned = true;
@@ -356,7 +374,7 @@ void Rat_CheckDamage(Rat* this, PlayState* play) {
 
     if (!this->drowned && this->collider.base.acFlags & AC_HIT) {
         this->collider.base.acFlags &= ~AC_HIT;
-        Actor_SetDropFlag(&this->actor, &this->collider.info, true);
+        Actor_SetDropFlag(&this->actor, &this->collider.elem, true);
 
         if ((this->actionFunc != Rat_Die) && (this->actionFunc != Rat_Damaged)) {
             switch (this->actor.colChkInfo.damageEffect) {
@@ -411,7 +429,7 @@ void Rat_Update(Actor* thisx, PlayState* play) {
     }
 }
 
-void Rat_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, void* thisx, Gfx** gfx) {
+void Rat_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, void* thisx) {
     Rat* this = (Rat*)thisx;
 
     if (limbIndex == GRATSKEL_HEAD_LIMB) {
