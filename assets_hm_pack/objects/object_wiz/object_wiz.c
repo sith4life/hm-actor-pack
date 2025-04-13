@@ -6,11 +6,11 @@
 #include "assets/objects/gameplay_keep/gameplay_keep.h"
 
 u64 gWizrobeEffectTex[] = {
-#include "assets/objects/hm_pack/object_wiz/wizrobe_ice_smoke.i4.inc.c"
+#include "assets_hm_pack/objects/object_wiz/wizrobe_ice_smoke.i4.inc.c"
 };
 
 u64 gWizrobeIceSmokeMaskTex[] = {
-#include "assets/objects/hm_pack/object_wiz/wizrobe_ice_smoke_mask.i4.inc.c"
+#include "assets_hm_pack/objects/object_wiz/wizrobe_ice_smoke_mask.i4.inc.c"
 };
 
 Vtx object_wizVtx_000E40[] = {
@@ -74,11 +74,11 @@ Gfx gWizrobeSmallFlameDL[] = {
 };
 
 u64 gWizrobeSmallFlameTex[] = {
-#include "assets/objects/hm_pack/object_wiz/wizrobe_small_flame.i4.inc.c"
+#include "assets_hm_pack/objects/object_wiz/wizrobe_small_flame.i4.inc.c"
 };
 
 u64 gWizrobeSmallFlameMaskTex[] = {
-#include "assets/objects/hm_pack/object_wiz/wizrobe_small_flame_mask.i4.inc.c"
+#include "assets_hm_pack/objects/object_wiz/wizrobe_small_flame_mask.i4.inc.c"
 };
 
 Vtx object_wizVtx_002B10[] = {
@@ -105,7 +105,7 @@ Gfx gWizrobeMagicProjectileDL[] = {
 };
 
 u64 gWizrobeMagicProjectileTex[] = {
-#include "assets/objects/hm_pack/object_wiz/wizrobe_magic_projectile.i4.inc.c"
+#include "assets_hm_pack/objects/object_wiz/wizrobe_magic_projectile.i4.inc.c"
 };
 
 u8 object_wiz_possiblePadding_002DFC[] = {
@@ -113,7 +113,7 @@ u8 object_wiz_possiblePadding_002DFC[] = {
 };
 
 u64 gWizrobeFirePoolTex[] = {
-#include "assets/objects/hm_pack/object_wiz/wizrobe_fire_pool.i4.inc.c"
+#include "assets_hm_pack/objects/object_wiz/wizrobe_fire_pool.i4.inc.c"
 };
 
 Vtx object_wizVtx_003000[] = {
@@ -198,7 +198,7 @@ u8 object_wiz_possiblePadding_0036F8[] = {
 };
 
 u64 gWizrobeBigFlameTex[] = {
-#include "assets/objects/hm_pack/object_wiz/wizrobe_big_flame.i8.inc.c"
+#include "assets_hm_pack/objects/object_wiz/wizrobe_big_flame.i8.inc.c"
 };
 
 Vtx object_wizVtx_003F00[] = {
@@ -245,7 +245,7 @@ u8 object_wiz_possiblePadding_0040A8[] = {
 };
 
 u64 gWizrobeIcePoolTex[] = {
-#include "assets/objects/hm_pack/object_wiz/wizrobe_ice_pool.i8.inc.c"
+#include "assets_hm_pack/objects/object_wiz/wizrobe_ice_pool.i8.inc.c"
 };
 
 Vtx object_wizVtx_0050F0[] = {
@@ -281,7 +281,7 @@ Gfx gWizrobeIcePoolDL[] = {
 };
 
 u64 gWizrobeIcePoolShineMaskTex[] = {
-#include "assets/objects/hm_pack/object_wiz/wizrobe_ice_pool_shine_mask.i4.inc.c"
+#include "assets_hm_pack/objects/object_wiz/wizrobe_ice_pool_shine_mask.i4.inc.c"
 };
 
 Vtx object_wizVtx_0056B0[] = {
